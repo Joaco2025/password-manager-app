@@ -1,9 +1,8 @@
 // src/components/TitleBar.tsx
-import React from 'react'
+import { Minus, Square, X } from 'lucide-react'
 
 export const TitleBar = () => {
-  // Funciones helper para limpiar el código del JSX
-  // @ts-ignore (Ignoramos TS por ahora hasta configurar la interfaz global)
+  // @ts-ignore
   const handleMinimize = () => window.api.minimize()
   // @ts-ignore
   const handleMaximize = () => window.api.maximize()
@@ -11,35 +10,18 @@ export const TitleBar = () => {
   const handleClose = () => window.api.close()
 
   return (
-    <div className="h-10 bg-slate-900 flex items-center justify-between px-4 select-none border-b border-slate-800">
-      {/* Zona de Arrastre */}
-      <div className="flex items-center gap-2 flex-1" style={{ WebkitAppRegion: 'drag' } as any}>
-        <span className="text-yellow-500 text-xl">🦉</span>
-        <span className="text-gray-200 font-bold text-sm tracking-wide">Bóveda Desktop</span>
+    // CAMBIO: Fondo slate-950 en lugar de black, y borde más suave
+    <div className="h-10 bg-slate-950 flex items-center justify-between px-4 select-none border-b border-white/5">
+      <div className="flex items-center gap-3 flex-1 opacity-80" style={{ WebkitAppRegion: 'drag' } as any}>
+        {/* CAMBIO: El punto ahora es Indigo para dar color desde arriba */}
+        <div className="w-2 h-2 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+        <span className="text-slate-200 font-medium text-xs tracking-widest uppercase">MyVault</span>
       </div>
 
-      {/* Botones de Control (Ahora con onClick) */}
-      <div className="flex gap-2" style={{ WebkitAppRegion: 'no-drag' } as any}>
-        {/* Minimizar (Amarillo) */}
-        <div 
-          onClick={handleMinimize}
-          className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-400 cursor-pointer"
-          title="Minimizar"
-        ></div>
-        
-        {/* Maximizar (Verde) */}
-        <div 
-          onClick={handleMaximize}
-          className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-400 cursor-pointer"
-          title="Maximizar"
-        ></div>
-        
-        {/* Cerrar (Rojo) */}
-        <div 
-          onClick={handleClose}
-          className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-400 cursor-pointer"
-          title="Cerrar"
-        ></div>
+      <div className="flex items-center gap-4" style={{ WebkitAppRegion: 'no-drag' } as any}>
+        <button onClick={handleMinimize} className="text-slate-500 hover:text-white transition-colors"><Minus size={14} /></button>
+        <button onClick={handleMaximize} className="text-slate-500 hover:text-white transition-colors"><Square size={12} /></button>
+        <button onClick={handleClose} className="text-slate-500 hover:text-rose-500 transition-colors"><X size={14} /></button>
       </div>
     </div>
   )
