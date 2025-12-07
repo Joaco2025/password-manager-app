@@ -1,10 +1,10 @@
-// src/components/NewEntryModal.tsx
+// src/renderer/src/components/NewEntryModal.tsx
 import { useState } from 'react'
 import { X, Save, Globe, User, Lock, Link as LinkIcon } from 'lucide-react'
 
-// Lista de servicios precargados (Coinciden con tus logos)
+// PRESETS MATCHING YOUR LOGO FILES
 const PRESETS = [
-  { id: 'custom', name: 'Otro (Escribir manual)', url: '' },
+  { id: 'custom', name: 'Other (Custom)', url: '' },
   { id: 'amazon', name: 'Amazon', url: 'https://amazon.com' },
   { id: 'apple', name: 'Apple ID', url: 'https://appleid.apple.com' },
   { id: 'aws', name: 'AWS', url: 'https://aws.amazon.com' },
@@ -12,7 +12,7 @@ const PRESETS = [
   { id: 'discord', name: 'Discord', url: 'https://discord.com' },
   { id: 'disney_plus', name: 'Disney+', url: 'https://disneyplus.com' },
   { id: 'github', name: 'GitHub', url: 'https://github.com' },
-  { id: 'google', name: 'Gmail', url: 'https://workspace.google.com/intl/es-419_mx/gmail/' },
+  { id: 'google', name: 'Google', url: 'https://google.com' },
   { id: 'microsoft', name: 'Microsoft', url: 'https://microsoft.com' },
   { id: 'netflix', name: 'Netflix', url: 'https://netflix.com' },
   { id: 'paypal', name: 'PayPal', url: 'https://paypal.com' },
@@ -39,43 +39,47 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Decidimos el nombre del servicio: ¿Es preset o manual?
-    const serviceName = selectedPreset === 'custom' 
-      ? customName 
-      : PRESETS.find(p => p.id === selectedPreset)?.name
+    // LOGIC: Determine if it's a preset or custom entry
+    const isCustom = selectedPreset === 'custom'
+    const presetData = PRESETS.find(p => p.id === selectedPreset)
 
     onSave({
-      service: serviceName,
+      // Visual Name (e.g. "Netflix")
+      service: isCustom ? customName : presetData?.name,
+      // Technical ID for Logos (e.g. "netflix" or "custom")
+      service_id: isCustom ? 'custom' : selectedPreset, 
       ...form,
-      category: 'all' // Por defecto, luego lo hacemos dinámico si quieres
+      category: 'all',
+      url: isCustom ? '' : presetData?.url
     })
+    
+    // Reset and close
+    setForm({ email: '', username: '', password: '' })
     onClose()
   }
 
   return (
-    // FONDO OSCURO BORROSO (Backdrop)
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       
-      {/* LA VENTANA MODAL */}
       <div className="w-full max-w-md bg-[#0f111a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
         
-        {/* Header del Modal */}
+        {/* Header */}
         <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-white/5">
           <h2 className="text-white font-bold tracking-wide flex items-center gap-2">
             <span className="w-2 h-6 bg-indigo-500 rounded-full"></span>
-            Nueva Credencial
+            New Credential
           </h2>
           <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors">
             <X size={20} />
           </button>
         </div>
 
-        {/* Formulario */}
+        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           
-          {/* 1. SELECCIÓN DE SERVICIO (EL MENU PLEGABLE) */}
+          {/* 1. SERVICE SELECTOR */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Servicio / Página</label>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Service / Website</label>
             <div className="relative">
               <Globe className="absolute left-3 top-1/2 -translate-y-1/2 text-indigo-400" size={18} />
               <select 
@@ -89,11 +93,11 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
               </select>
             </div>
 
-            {/* Si elige "Otro", mostramos input manual */}
+            {/* Custom Input if "Other" is selected */}
             {selectedPreset === 'custom' && (
               <input 
                 type="text" 
-                placeholder="Escribe el nombre del sitio..."
+                placeholder="Enter service name..."
                 className="mt-2 w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl py-3 px-4 focus:border-indigo-500 outline-none"
                 value={customName}
                 onChange={e => setCustomName(e.target.value)}
@@ -102,14 +106,14 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             )}
           </div>
 
-          {/* 2. EMAIL (Obligatorio) */}
+          {/* 2. EMAIL */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Correo Electrónico</label>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
             <div className="relative">
               <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
               <input 
                 type="email"
-                placeholder="ejemplo@correo.com"
+                placeholder="name@example.com"
                 className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl py-3 pl-10 pr-4 focus:border-indigo-500 outline-none focus:bg-slate-800 transition-colors"
                 value={form.email}
                 onChange={e => setForm({...form, email: e.target.value})}
@@ -118,17 +122,17 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* 3. USERNAME (Opcional) */}
+          {/* 3. USERNAME */}
           <div className="space-y-2">
             <div className="flex justify-between">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Usuario</label>
-              <span className="text-[10px] text-slate-600 uppercase">Opcional</span>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Username</label>
+              <span className="text-[10px] text-slate-600 uppercase">Optional</span>
             </div>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
               <input 
                 type="text"
-                placeholder="Ej. GamerPro123"
+                placeholder="e.g. GamerPro123"
                 className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl py-3 pl-10 pr-4 focus:border-indigo-500 outline-none focus:bg-slate-800 transition-colors"
                 value={form.username}
                 onChange={e => setForm({...form, username: e.target.value})}
@@ -136,9 +140,9 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* 4. PASSWORD (Obligatorio) */}
+          {/* 4. PASSWORD */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Contraseña</label>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-rose-400" size={18} />
               <input 
@@ -152,21 +156,21 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* FOOTER BOTONES */}
+          {/* Footer Buttons */}
           <div className="pt-4 flex gap-3">
             <button 
               type="button" 
               onClick={onClose}
               className="flex-1 py-3 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 font-medium text-sm transition-colors"
             >
-              Cancelar
+              Cancel
             </button>
             <button 
               type="submit"
               className="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-900/20 flex items-center justify-center gap-2 transition-transform active:scale-95"
             >
               <Save size={18} />
-              Guardar
+              Save Entry
             </button>
           </div>
 

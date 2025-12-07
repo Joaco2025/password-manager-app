@@ -1,0 +1,82 @@
+// src/renderer/src/components/LoginScreen.tsx
+import { useState } from 'react'
+import { Lock, ArrowRight, Loader2 } from 'lucide-react'
+
+interface Props {
+  onUnlock: () => void
+  username: string
+}
+
+export const LoginScreen = ({ onUnlock, username }: Props) => {
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(false)
+
+    try {
+      // @ts-ignore
+      const success = await window.api.login(password)
+      
+      if (success) {
+        onUnlock()
+      } else {
+        setError(true)
+        setPassword('')
+      }
+    } catch (err) {
+      console.error(err)
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    // AGREGADO: overflow-hidden para evitar scrollbars
+    <div className="h-screen w-screen bg-[#02040a] flex items-center justify-center relative font-sans overflow-hidden">
+      
+      <div className="w-full max-w-sm p-6 relative z-10">
+        
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 bg-slate-900/50 border border-white/5 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+            <Lock size={20} className="text-indigo-400" />
+          </div>
+          <h2 className="text-xl font-bold text-white tracking-tight">Vault Locked</h2>
+          
+          <p className="text-slate-500 text-sm mt-2">
+            Welcome back, <span className="text-indigo-300 font-medium">{username}</span>.
+            <br />Please enter your master password.
+          </p>
+        </div>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div className="relative group">
+            <input 
+              type="password" 
+              placeholder="Master Password"
+              className={`w-full bg-slate-900 border ${error ? 'border-red-500/50' : 'border-white/5'} rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:bg-slate-900/80 transition-all text-center tracking-widest`}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              autoFocus
+            />
+          </div>
+
+          {error && (
+            <p className="text-red-400 text-xs text-center">Incorrect password</p>
+          )}
+
+          <button 
+            disabled={loading || !password}
+            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-900/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+          >
+            {loading ? <Loader2 className="animate-spin" /> : <>Unlock <ArrowRight size={18} /></>}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}

@@ -1,3 +1,50 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* === GLOBAL === */
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #02040a; /* Fondo Midnight */
+  overflow: hidden; /* Evita doble scrollbar en la ventana principal */
+  font-family: 'Inter', sans-serif;
+}
+
+/* === SCROLLBAR MIDNIGHT LUXURY (La Joya) === */
+/* Aplica a cualquier contenedor que tenga overflow-auto */
+
+::-webkit-scrollbar {
+  width: 10px; /* Ancho total (incluye padding) */
+  height: 10px;
+}
+
+/* El carril (Track) - Totalmente transparente para que se vea el fondo */
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+/* La barra (Thumb) - Diseño de cápsula */
+::-webkit-scrollbar-thumb {
+  background-color: #1e293b; /* Slate-800 (Gris oscuro sutil) */
+  border-radius: 9999px;     /* Redondo perfecto */
+  border: 3px solid #02040a; /* Truco: Borde del color del fondo para que parezca flotar y ser más delgada */
+}
+
+/* Efecto Hover - Se ilumina con tu marca */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6366f1; /* Indigo-500 (Tu color de acento) */
+  border: 2px solid #02040a; /* Se hace un pelín más gruesa al interactuar */
+}
+
+/* Esquina invisible */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* === UTILIDADES === */
+.no-drag {
+  -webkit-app-region: no-drag;
+}
