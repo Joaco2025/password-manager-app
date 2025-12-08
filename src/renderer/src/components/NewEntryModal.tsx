@@ -1,7 +1,5 @@
-// src/renderer/src/components/NewEntryModal.tsx
 import { useState } from 'react'
-// AGREGADO EL ICONO 'Ban'
-import { X, Save, Globe, User, Lock, Link as LinkIcon, Ban } from 'lucide-react'
+import { X, Save, Globe, User, Lock, Link as LinkIcon, Ban, Tag } from 'lucide-react'
 
 const PRESETS = [
   { id: 'custom', name: 'Other (Custom)', url: '' },
@@ -23,6 +21,15 @@ const PRESETS = [
   { id: 'unison', name: 'Unison', url: 'https://alunos.unison.mx' },
 ]
 
+// CATEGORÍAS DISPONIBLES
+const CATEGORY_OPTIONS = [
+  { id: 'social', label: 'Social Media' },
+  { id: 'work', label: 'Work & Business' },
+  { id: 'finance', label: 'Finance & Banking' },
+  { id: 'gaming', label: 'Gaming & Entertainment' },
+  { id: 'other', label: 'Other' }
+]
+
 interface Props {
   isOpen: boolean
   onClose: () => void
@@ -32,28 +39,31 @@ interface Props {
 export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
   const [selectedPreset, setSelectedPreset] = useState('netflix')
   const [customName, setCustomName] = useState('')
-  const [form, setForm] = useState({ email: '', username: '', password: '' })
+  // AGREGAMOS CATEGORY AL ESTADO
+  const [form, setForm] = useState({ email: '', username: '', password: '', category: 'social' })
 
   if (!isOpen) return null
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
     const isCustom = selectedPreset === 'custom'
     const presetData = PRESETS.find(p => p.id === selectedPreset)
 
     onSave({
       service: isCustom ? customName : presetData?.name,
       service_id: isCustom ? 'custom' : selectedPreset, 
-      ...form,
-      category: 'all',
+      ...form, // Esto ya incluye la categoría seleccionada
       url: isCustom ? '' : presetData?.url
     })
-    setForm({ email: '', username: '', password: '' })
+    
+    setForm({ email: '', username: '', password: '', category: 'social' })
     onClose()
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      
       <div className="w-full max-w-md bg-[#0f111a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
         
         {/* Header */}
@@ -70,7 +80,7 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           
-          {/* 1. SERVICE SELECTOR */}
+          {/* 1. SERVICE */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Service / Website</label>
             <div className="relative">
@@ -97,7 +107,24 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             )}
           </div>
 
-          {/* 2. EMAIL */}
+          {/* 2. CATEGORY (NUEVO CAMPO) */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Category</label>
+            <div className="relative">
+              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+              <select 
+                value={form.category}
+                onChange={(e) => setForm({...form, category: e.target.value})}
+                className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl py-3 pl-10 pr-4 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none appearance-none cursor-pointer hover:bg-slate-800 transition-colors"
+              >
+                {CATEGORY_OPTIONS.map(c => (
+                  <option key={c.id} value={c.id}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* 3. EMAIL */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
             <div className="relative">
@@ -113,7 +140,7 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* 3. USERNAME */}
+          {/* 4. USERNAME */}
           <div className="space-y-2">
             <div className="flex justify-between">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Username</label>
@@ -131,7 +158,7 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* 4. PASSWORD */}
+          {/* 5. PASSWORD */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Password</label>
             <div className="relative">
@@ -147,9 +174,8 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* Footer Buttons */}
+          {/* Buttons */}
           <div className="pt-4 flex gap-3">
-            {/* BOTÓN CANCEL CON ÍCONO */}
             <button 
               type="button" 
               onClick={onClose}

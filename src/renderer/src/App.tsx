@@ -1,4 +1,4 @@
-// src/renderer/src/App.tsx
+// ... (imports anteriores se mantienen)
 import { useState, useEffect } from 'react'
 import { TitleBar } from './components/TitleBar'
 import { NewEntryModal } from './components/NewEntryModal'
@@ -6,11 +6,11 @@ import { EntryDetailModal } from './components/EntryDetailModal'
 import { SetupScreen } from './components/SetupScreen'
 import { LoginScreen } from './components/LoginScreen'
 import { HowItWorksScreen } from './components/HowItWorksScreen'
-// AGREGADOS: Shield, Inbox
-import { Search, Plus, Globe, Briefcase, CreditCard, Gamepad2, Copy, MoreVertical, LayoutGrid, Loader2, HelpCircle, Shield, Inbox } from 'lucide-react'
-import appLogo from './assets/logos/MyVault-Logo.png' // LOGO PRINCIPAL
+import { Search, Plus, Globe, Briefcase, CreditCard, Gamepad2, Copy, MoreVertical, LayoutGrid, Zap, Loader2, HelpCircle, Shield, Inbox } from 'lucide-react'
+import appLogo from './assets/logos/MyVault-Logo.png'
 
-// === IMPORTS DE LOGOS DE SERVICIOS ===
+// ... (imports de logos de servicios siguen igual) ...
+// ... (asegurate de tener todos los imports de imagenes que tenías antes) ...
 import amazonImg from './assets/logos/amazon.png'
 import appleImg from './assets/logos/apple.png'
 import awsImg from './assets/logos/aws.png'
@@ -117,12 +117,31 @@ function App() {
     } catch (e) { console.error("Error deleting:", e) }
   }
 
-  const groupedPasswords = passwords.reduce((acc: any, entry: any) => {
+  // === LÓGICA DE FILTRADO Y AGRUPACIÓN ===
+  
+  // 1. Primero filtramos por Categoría Y Búsqueda
+  const filteredPasswords = passwords.filter((entry) => {
+    // Filtro de Categoría
+    const matchesCategory = activeCategory === 'all' || entry.category === activeCategory
+    
+    // Filtro de Búsqueda (Search)
+    const searchLower = searchTerm.toLowerCase()
+    const matchesSearch = 
+      entry.service_name.toLowerCase().includes(searchLower) || 
+      entry.email.toLowerCase().includes(searchLower) ||
+      (entry.username && entry.username.toLowerCase().includes(searchLower))
+
+    return matchesCategory && matchesSearch
+  })
+
+  // 2. Luego agrupamos lo que quedó filtrado
+  const groupedPasswords = filteredPasswords.reduce((acc: any, entry: any) => {
     const key = entry.service_id === 'custom' ? entry.service_name : entry.service_id
     if (!acc[key]) acc[key] = []
     acc[key].push(entry)
     return acc
   }, {})
+  
   const groupsArray = Object.values(groupedPasswords)
 
   if (view === 'loading') return <div className="h-screen bg-slate-950 flex items-center justify-center text-indigo-500"><TitleBar /><Loader2 className="animate-spin" size={32} /></div>
@@ -143,10 +162,8 @@ function App() {
       />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* SIDEBAR */}
         <aside className="w-64 bg-[#02040a] border-r border-white/5 flex flex-col py-6 px-3">
           <div className="px-3 mb-8 flex items-center gap-3">
-            {/* LOGO NUEVO EN SIDEBAR */}
             <img src={appLogo} alt="MyVault" className="w-10 h-10 drop-shadow-[0_0_15px_rgba(99,102,241,0.3)]" />
             <div>
               <h1 className="text-base font-bold text-white tracking-wide">MyVault</h1>
@@ -173,7 +190,6 @@ function App() {
           </div>
         </aside>
 
-        {/* MAIN CONTENT */}
         <main className="flex-1 flex flex-col min-w-0 relative bg-[#050505]">
           <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-indigo-900/10 to-transparent pointer-events-none"></div>
           <header className="h-24 flex items-center justify-between px-8 relative z-10">
@@ -197,23 +213,17 @@ function App() {
           </header>
 
           <div className="flex-1 overflow-y-auto p-8 relative z-10">
-            
-            {/* TÍTULO PRINCIPAL CON ÍCONO DE ESCUDO */}
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
               <Shield size={24} className="text-indigo-500" />
               All Accounts
             </h2>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {groupsArray.length === 0 ? (
-                
-                /* ESTADO VACÍO MEJORADO CON ÍCONO GIGANTE */
                 <div className="col-span-full flex flex-col items-center justify-center pt-32 text-slate-600 opacity-50 select-none">
                    <Inbox size={64} className="mb-4 text-slate-700" />
-                   <p className="text-xl font-medium text-slate-500 mb-2">Your vault is empty.</p>
-                   <p className="text-sm">Time to secure your first credential.</p>
+                   <p className="text-xl font-medium text-slate-500 mb-2">No results found.</p>
+                   <p className="text-sm">Try changing your filters or adding a new entry.</p>
                 </div>
-
               ) : (
                 groupsArray.map((group: any) => {
                   const firstEntry = group[0]
@@ -232,10 +242,10 @@ function App() {
                           <p className="text-slate-300 text-xs font-medium truncate">{firstEntry.email}</p>
                           {firstEntry.username && <p className="text-slate-500 text-[10px] tracking-wide truncate mt-0.5">{firstEntry.username}</p>}
                         </div>
+                        
+                        {/* FOOTER DE LA TARJETA LIMPIO (SIN PUNTOS) */}
                         <div className="flex items-center justify-between bg-slate-950/50 rounded-lg px-3 py-2 border border-white/5 group-hover:border-indigo-500/20 transition-colors">
-                          <div className="flex gap-1">
-                            {[1,2,3,4].map(i => <div key={i} className={`w-1.5 h-1.5 rounded-full ${i <= 2 ? 'bg-indigo-500' : 'bg-slate-700'}`}></div>)}
-                          </div>
+                          <span className="text-[10px] text-slate-500 uppercase tracking-widest">{firstEntry.category}</span>
                           <span className="text-xs text-indigo-400 font-medium">View Details</span>
                         </div>
                       </div>
