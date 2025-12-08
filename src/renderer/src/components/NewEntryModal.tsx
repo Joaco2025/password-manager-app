@@ -1,8 +1,8 @@
 // src/renderer/src/components/NewEntryModal.tsx
 import { useState } from 'react'
-import { X, Save, Globe, User, Lock, Link as LinkIcon } from 'lucide-react'
+// AGREGADO EL ICONO 'Ban'
+import { X, Save, Globe, User, Lock, Link as LinkIcon, Ban } from 'lucide-react'
 
-// PRESETS MATCHING YOUR LOGO FILES
 const PRESETS = [
   { id: 'custom', name: 'Other (Custom)', url: '' },
   { id: 'amazon', name: 'Amazon', url: 'https://amazon.com' },
@@ -30,7 +30,7 @@ interface Props {
 }
 
 export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
-  const [selectedPreset, setSelectedPreset] = useState('netflix') // Default
+  const [selectedPreset, setSelectedPreset] = useState('netflix')
   const [customName, setCustomName] = useState('')
   const [form, setForm] = useState({ email: '', username: '', password: '' })
 
@@ -38,29 +38,22 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    // LOGIC: Determine if it's a preset or custom entry
     const isCustom = selectedPreset === 'custom'
     const presetData = PRESETS.find(p => p.id === selectedPreset)
 
     onSave({
-      // Visual Name (e.g. "Netflix")
       service: isCustom ? customName : presetData?.name,
-      // Technical ID for Logos (e.g. "netflix" or "custom")
       service_id: isCustom ? 'custom' : selectedPreset, 
       ...form,
       category: 'all',
       url: isCustom ? '' : presetData?.url
     })
-    
-    // Reset and close
     setForm({ email: '', username: '', password: '' })
     onClose()
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      
       <div className="w-full max-w-md bg-[#0f111a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
         
         {/* Header */}
@@ -92,8 +85,6 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
                 ))}
               </select>
             </div>
-
-            {/* Custom Input if "Other" is selected */}
             {selectedPreset === 'custom' && (
               <input 
                 type="text" 
@@ -158,11 +149,13 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
 
           {/* Footer Buttons */}
           <div className="pt-4 flex gap-3">
+            {/* BOTÓN CANCEL CON ÍCONO */}
             <button 
               type="button" 
               onClick={onClose}
-              className="flex-1 py-3 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 font-medium text-sm transition-colors"
+              className="flex-1 py-3 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 font-medium text-sm transition-colors flex items-center justify-center gap-2"
             >
+              <Ban size={18} />
               Cancel
             </button>
             <button 

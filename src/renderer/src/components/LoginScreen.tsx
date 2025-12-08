@@ -1,6 +1,7 @@
 // src/renderer/src/components/LoginScreen.tsx
 import { useState } from 'react'
-import { Lock, ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
+import appLogo from '../assets/logos/MyVault-Logo.png'
 
 interface Props {
   onUnlock: () => void
@@ -36,15 +37,14 @@ export const LoginScreen = ({ onUnlock, username }: Props) => {
   }
 
   return (
-    // AGREGADO: overflow-hidden para evitar scrollbars
     <div className="h-screen w-screen bg-[#02040a] flex items-center justify-center relative font-sans overflow-hidden">
       
-      <div className="w-full max-w-sm p-6 relative z-10">
+      <div className="w-full max-w-sm p-6 relative z-10 animate-in fade-in zoom-in-95 duration-500">
         
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-slate-900/50 border border-white/5 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-            <Lock size={20} className="text-indigo-400" />
-          </div>
+          {/* NUEVO LOGO */}
+          <img src={appLogo} alt="Logo" className="w-14 h-14 mx-auto mb-6 drop-shadow-xl" />
+
           <h2 className="text-xl font-bold text-white tracking-tight">Vault Locked</h2>
           
           <p className="text-slate-500 text-sm mt-2">
@@ -66,7 +66,7 @@ export const LoginScreen = ({ onUnlock, username }: Props) => {
           </div>
 
           {error && (
-            <p className="text-red-400 text-xs text-center">Incorrect password</p>
+            <p className="text-red-400 text-xs text-center animate-pulse">Incorrect password</p>
           )}
 
           <button 

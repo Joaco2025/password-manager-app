@@ -1,7 +1,8 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+//import icon from '../../resources/icon.png?asset'
+import icon from '../../src/renderer/src/assets/logos/MyVault-Logo.png?asset'
 import { initDB, addEntry, getAllEntries, deleteEntry, hasMasterAccount, createMasterAccount, getMasterAuthData, getMasterUsername } from './database' // Asegúrate de importar deleteEntry
 import { AuthService } from './auth'
 import { CryptoService } from './crypto'
@@ -14,7 +15,8 @@ function createWindow(): void {
     autoHideMenuBar: true,
     frame: false,
     titleBarStyle: 'hidden',
-    ...(process.platform === 'linux' ? { icon } : {}),
+    //...(process.platform === 'linux' ? { icon } : {}),
+    icon: icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
