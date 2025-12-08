@@ -1,7 +1,7 @@
-// src/renderer/src/components/LoginScreen.tsx
 import { useState } from 'react'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import appLogo from '../assets/logos/MyVault-Logo.png'
+import { useToast } from '../context/ToastContext' // <--- IMPORTAR HOOK
 
 interface Props {
   onUnlock: () => void
@@ -9,6 +9,7 @@ interface Props {
 }
 
 export const LoginScreen = ({ onUnlock, username }: Props) => {
+  const { showToast } = useToast() // <--- INICIALIZAR
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
@@ -24,13 +25,16 @@ export const LoginScreen = ({ onUnlock, username }: Props) => {
       
       if (success) {
         onUnlock()
+        showToast(`Welcome back, ${username}`, 'success') // <--- SALUDO DE ÉXITO
       } else {
         setError(true)
         setPassword('')
+        showToast('Incorrect Master Password', 'error') // <--- ALERTA DE ERROR
       }
     } catch (err) {
       console.error(err)
       setError(true)
+      showToast('System Error', 'error')
     } finally {
       setLoading(false)
     }
@@ -42,7 +46,6 @@ export const LoginScreen = ({ onUnlock, username }: Props) => {
       <div className="w-full max-w-sm p-6 relative z-10 animate-in fade-in zoom-in-95 duration-500">
         
         <div className="text-center mb-8">
-          {/* NUEVO LOGO */}
           <img src={appLogo} alt="Logo" className="w-14 h-14 mx-auto mb-6 drop-shadow-xl" />
 
           <h2 className="text-xl font-bold text-white tracking-tight">Vault Locked</h2>

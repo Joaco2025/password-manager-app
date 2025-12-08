@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { X, Save, Globe, User, Lock, Link as LinkIcon, Ban, Tag } from 'lucide-react'
+import { useToast } from '../context/ToastContext' // <--- IMPORTAR HOOK
 
 const PRESETS = [
   { id: 'custom', name: 'Other (Custom)', url: '' },
@@ -21,7 +22,6 @@ const PRESETS = [
   { id: 'unison', name: 'Unison', url: 'https://alunos.unison.mx' },
 ]
 
-// CATEGORÍAS DISPONIBLES
 const CATEGORY_OPTIONS = [
   { id: 'social', label: 'Social Media' },
   { id: 'work', label: 'Work & Business' },
@@ -37,9 +37,9 @@ interface Props {
 }
 
 export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
+  const { showToast } = useToast() // <--- INICIALIZAR
   const [selectedPreset, setSelectedPreset] = useState('netflix')
   const [customName, setCustomName] = useState('')
-  // AGREGAMOS CATEGORY AL ESTADO
   const [form, setForm] = useState({ email: '', username: '', password: '', category: 'social' })
 
   if (!isOpen) return null
@@ -53,9 +53,11 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
     onSave({
       service: isCustom ? customName : presetData?.name,
       service_id: isCustom ? 'custom' : selectedPreset, 
-      ...form, // Esto ya incluye la categoría seleccionada
+      ...form,
       url: isCustom ? '' : presetData?.url
     })
+    
+    showToast('New credential secured', 'success') // <--- NOTIFICACIÓN ÉXITO
     
     setForm({ email: '', username: '', password: '', category: 'social' })
     onClose()
@@ -66,7 +68,6 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
       
       <div className="w-full max-w-md bg-[#0f111a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
         
-        {/* Header */}
         <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-white/5">
           <h2 className="text-white font-bold tracking-wide flex items-center gap-2">
             <span className="w-2 h-6 bg-indigo-500 rounded-full"></span>
@@ -77,10 +78,9 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           
-          {/* 1. SERVICE */}
+          {/* SERVICE */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Service / Website</label>
             <div className="relative">
@@ -107,7 +107,7 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             )}
           </div>
 
-          {/* 2. CATEGORY (NUEVO CAMPO) */}
+          {/* CATEGORY */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Category</label>
             <div className="relative">
@@ -124,7 +124,7 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* 3. EMAIL */}
+          {/* EMAIL */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
             <div className="relative">
@@ -140,7 +140,7 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* 4. USERNAME */}
+          {/* USERNAME */}
           <div className="space-y-2">
             <div className="flex justify-between">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Username</label>
@@ -158,7 +158,7 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* 5. PASSWORD */}
+          {/* PASSWORD */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Password</label>
             <div className="relative">
@@ -174,7 +174,7 @@ export const NewEntryModal = ({ isOpen, onClose, onSave }: Props) => {
             </div>
           </div>
 
-          {/* Buttons */}
+          {/* FOOTER */}
           <div className="pt-4 flex gap-3">
             <button 
               type="button" 

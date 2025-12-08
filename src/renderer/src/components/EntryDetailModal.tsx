@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, Copy, Eye, EyeOff, ChevronLeft, ChevronRight, Globe, User, Key, Mail, Trash2 } from 'lucide-react'
+import { useToast } from '../context/ToastContext' // <--- IMPORTAR HOOK
 
 interface Entry {
   id: number
@@ -16,10 +17,11 @@ interface Props {
   onClose: () => void
   entries: Entry[]
   BrandIcon: any
-  onDelete: (id: number) => void // NUEVO PROP
+  onDelete: (id: number) => void
 }
 
 export const EntryDetailModal = ({ isOpen, onClose, entries, BrandIcon, onDelete }: Props) => {
+  const { showToast } = useToast() // <--- INICIALIZAR
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showPassword, setShowPassword] = useState(false)
   const [copiedField, setCopiedField] = useState<string | null>(null)
@@ -31,10 +33,8 @@ export const EntryDetailModal = ({ isOpen, onClose, entries, BrandIcon, onDelete
     }
   }, [isOpen])
 
-  // Protección si se borra la última entrada del grupo
   if (!isOpen || entries.length === 0) return null
   
-  // Asegurarnos de que el índice sea válido
   const safeIndex = currentIndex >= entries.length ? 0 : currentIndex
   const currentEntry = entries[safeIndex]
   const hasMultiple = entries.length > 1
@@ -52,14 +52,19 @@ export const EntryDetailModal = ({ isOpen, onClose, entries, BrandIcon, onDelete
   const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text)
     setCopiedField(field)
+    
+    // NOTIFICACIÓN ELEGANTE
+    const label = field === 'user' ? 'Username' : field === 'email' ? 'Email' : 'Password'
+    showToast(`${label} copied to clipboard`, 'success')
+
     setTimeout(() => setCopiedField(null), 2000)
   }
 
   const handleDelete = () => {
     if (confirm('Are you sure you want to delete this credential?')) {
       onDelete(currentEntry.id)
-      // Si era la última del grupo, cerramos el modal desde el padre
-      // Si quedan más, ajustamos el índice
+      showToast('Credential deleted permanently', 'info') // NOTIFICACIÓN DE BORRADO
+      
       if (entries.length > 1) {
         setCurrentIndex(0)
       }
@@ -77,7 +82,6 @@ export const EntryDetailModal = ({ isOpen, onClose, entries, BrandIcon, onDelete
             <X size={20} />
           </button>
 
-          {/* Botón de Borrar (Izquierda) */}
           <button 
             onClick={handleDelete}
             className="absolute top-4 left-4 text-slate-600 hover:text-red-500 transition-colors p-1"
@@ -114,7 +118,7 @@ export const EntryDetailModal = ({ isOpen, onClose, entries, BrandIcon, onDelete
             </>
           )}
 
-          {/* CAMPO 1: EMAIL */}
+          {/* EMAIL */}
           <div className="space-y-1.5 px-6">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email Address</label>
             <div className="flex gap-2">
@@ -131,7 +135,7 @@ export const EntryDetailModal = ({ isOpen, onClose, entries, BrandIcon, onDelete
             </div>
           </div>
 
-          {/* CAMPO 2: USERNAME (Solo si existe) */}
+          {/* USERNAME */}
           {currentEntry.username && (
             <div className="space-y-1.5 px-6">
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Username</label>
@@ -150,7 +154,7 @@ export const EntryDetailModal = ({ isOpen, onClose, entries, BrandIcon, onDelete
             </div>
           )}
 
-          {/* CAMPO 3: PASSWORD */}
+          {/* PASSWORD */}
           <div className="space-y-1.5 px-6">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Password</label>
             <div className="flex gap-2">
