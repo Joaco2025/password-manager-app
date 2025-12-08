@@ -1,6 +1,6 @@
 // src/renderer/src/context/ToastContext.tsx
 import React, { createContext, useContext, useState, useCallback } from 'react'
-import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react'
+import { Check, AlertTriangle, Info, X, ShieldCheck, XCircle } from 'lucide-react'
 
 type ToastType = 'success' | 'error' | 'info'
 
@@ -23,40 +23,103 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     const id = Date.now()
     setToasts((prev) => [...prev, { id, message, type }])
     
-    // Auto-eliminar a los 3 segundos
+    // Duración un poco más larga para leer con calma (4s)
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id))
-    }, 3000)
+    }, 4000)
   }, [])
 
   const removeToast = (id: number) => {
+    // Animación de salida (opcional si se maneja con librerías, aquí lo quitamos directo)
     setToasts((prev) => prev.filter((t) => t.id !== id))
+  }
+
+  // CONFIGURACIÓN DE ESTILOS POR TIPO
+  const getToastStyles = (type: ToastType) => {
+    switch (type) {
+      case 'success':
+        return {
+          iconBg: 'bg-emerald-500/20',
+          iconColor: 'text-emerald-400',
+          borderColor: 'border-emerald-500/20',
+          shadow: 'shadow-emerald-900/20',
+          icon: <Check size={16} strokeWidth={3} />
+        }
+      case 'error':
+        return {
+          iconBg: 'bg-rose-500/20',
+          iconColor: 'text-rose-400',
+          borderColor: 'border-rose-500/20',
+          shadow: 'shadow-rose-900/20',
+          icon: <XCircle size={16} strokeWidth={3} />
+        }
+      default: // info
+        return {
+          iconBg: 'bg-indigo-500/20',
+          iconColor: 'text-indigo-400',
+          borderColor: 'border-indigo-500/20',
+          shadow: 'shadow-indigo-900/20',
+          icon: <Info size={16} strokeWidth={3} />
+        }
+    }
   }
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
       
-      {/* Contenedor Flotante de Notificaciones */}
-      <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none">
-        {toasts.map((toast) => (
-          <div 
-            key={toast.id}
-            className="pointer-events-auto flex items-center gap-3 min-w-[300px] bg-[#0f111a]/95 backdrop-blur-md border border-white/10 p-4 rounded-xl shadow-2xl shadow-black/50 animate-in slide-in-from-right-full fade-in duration-300"
-          >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${toast.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : ''} ${toast.type === 'error' ? 'bg-rose-500/10 text-rose-400' : ''} ${toast.type === 'info' ? 'bg-indigo-500/10 text-indigo-400' : ''}`}>
-              {toast.type === 'success' && <CheckCircle2 size={18} />}
-              {toast.type === 'error' && <AlertCircle size={18} />}
-              {toast.type === 'info' && <Info size={18} />}
+      {/* CONTENEDOR FLOTANTE (Bottom-Right) */}
+      <div className="fixed bottom-8 right-8 z-[100] flex flex-col gap-4 pointer-events-none">
+        {toasts.map((toast) => {
+          const style = getToastStyles(toast.type)
+          
+          return (
+            <div 
+              key={toast.id}
+              className={`
+                pointer-events-auto flex items-center gap-4 
+                min-w-[320px] max-w-sm
+                bg-[#050505]/90 backdrop-blur-2xl 
+                border ${style.borderColor} 
+                p-4 rounded-2xl 
+                shadow-2xl ${style.shadow}
+                animate-in slide-in-from-bottom-5 fade-in zoom-in-95 duration-500 ease-out
+                group select-none
+              `}
+            >
+              {/* ICONO CON GLOW */}
+              <div className={`
+                w-10 h-10 rounded-full flex items-center justify-center shrink-0 
+                ${style.iconBg} ${style.iconColor} 
+                shadow-[0_0_15px_rgba(0,0,0,0.3)]
+              `}>
+                {style.icon}
+              </div>
+
+              {/* TEXTO */}
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-200 tracking-wide leading-tight">
+                  {toast.message}
+                </p>
+                {/* Pequeña marca de tiempo o subtítulo si quisieras */}
+                {/* <p className="text-[10px] text-slate-500 mt-0.5 uppercase tracking-wider">Just now</p> */}
+              </div>
+
+              {/* BOTÓN CERRAR (Solo visible al hover) */}
+              <button 
+                onClick={() => removeToast(toast.id)}
+                className="text-slate-600 hover:text-white transition-colors opacity-0 group-hover:opacity-100 p-1"
+              >
+                <X size={14} />
+              </button>
+              
+              {/* BARRA DE PROGRESO DECORATIVA (Opcional, da toque futurista) */}
+              <div className={`absolute bottom-0 left-4 right-4 h-[2px] rounded-full overflow-hidden opacity-20`}>
+                 <div className={`h-full w-full ${style.iconBg} animate-[shrink_4s_linear_forwards] origin-left bg-current ${style.iconColor}`}></div>
+              </div>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-white">{toast.message}</p>
-            </div>
-            <button onClick={() => removeToast(toast.id)} className="text-slate-500 hover:text-white transition-colors">
-              <X size={16} />
-            </button>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </ToastContext.Provider>
   )
