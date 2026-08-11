@@ -9,18 +9,18 @@
 
 ---
 
-## ✨ Features
+##  Features
 
-* **🔒 Zero-Knowledge Architecture:** We don't know your master password. Your data is encrypted locally on your device using military-grade standards before it ever hits the disk.
-* **🎨 Midnight Luxury UI:** A fully custom, frameless interface designed with a focus on deep aesthetics, micro-interactions, and visual hierarchy.
-* **⚡ Smart Grouping:** Automatically organizes multiple accounts under a single service card (e.g., multiple Gmails in one "Google" card).
-* **🔑 AES-256-GCM Encryption:** Every password is encrypted with a unique Initialization Vector (IV) and Authentication Tag to prevent tampering.
-* **📂 Local SQLite Database:** High-performance local storage. No cloud dependencies. You own your data.
-* **🛡️ Secure Authentication:** Argon2/PBKDF2 hashing for master password verification.
+* ** Zero-Knowledge Architecture:** We don't know your master password. Your data is encrypted locally on your device using military-grade standards before it ever hits the disk.
+* ** Midnight Luxury UI:** A fully custom, frameless interface designed with a focus on deep aesthetics, micro-interactions, and visual hierarchy.
+* ** Smart Grouping:** Automatically organizes multiple accounts under a single service card (e.g., multiple Gmails in one "Google" card).
+* ** AES-256-GCM Encryption:** Every password is encrypted with a unique Initialization Vector (IV) and Authentication Tag to prevent tampering.
+* ** Local SQLite Database:** High-performance local storage. No cloud dependencies. You own your data.
+* ** Secure Authentication:** Argon2/PBKDF2 hashing for master password verification.
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 Built with a modern, type-safe stack for maximum performance and security:
 
@@ -33,7 +33,7 @@ Built with a modern, type-safe stack for maximum performance and security:
 
 ---
 
-## 🏗️ Security Architecture
+##  Security Architecture
 
 MyVault uses a **Master Password** architecture to secure your secrets.
 
@@ -47,7 +47,7 @@ MyVault uses a **Master Password** architecture to secure your secrets.
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
